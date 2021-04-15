@@ -1,5 +1,5 @@
 # How to run the backend project
-Important: you need to have docker installed on your computer as well as Node.
+**Important**: you need to have docker installed on your computer as well as Node.
 
 - At the root folder, create a folder called ```mongodb``` and inside that folder create another one called ```database``` (Do not touch the database folder)
 
