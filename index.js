@@ -29,7 +29,7 @@ app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
 MongoClient.connect(connectionString, {useUnifiedTopology: true})
     .then( async client => {
         console.log('Connected to Database')
-        const db = await client.db('indep')
+        const db = client.db('indep')
 
         app.get('/', (request, response)=> {
             try{

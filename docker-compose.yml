@@ -11,6 +11,14 @@ services:
     ports:
       - 27017:27017
     restart: on-failure
+
+  mongoseed:
+    image: mongo
+    links:
+      - mongodb 
+    volumes:
+      - ./mongodb/:/mongodb
+    command: mongoimport --host mongodb --db indep --collection estate --file /mongodb/datos.json --jsonArray
   
   api:
     container_name: api
