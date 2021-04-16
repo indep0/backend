@@ -6,7 +6,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const PORT = 5000
 const MongoClient = require('mongodb').MongoClient
-const connectionString = 'mongodb://mongodb:27017'
+//const connectionString = 'mongodb://mongodb:27017'
+const connectionString = 'mongodb://127.0.0.1:27017'
 const queryString = require('querystring')
 
 
@@ -42,10 +43,25 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
             }
         })
 
+		// Solicita la lista de estados e inmuebles para llenado de dropdownlist
+		app.get('/info', async (reqest, response) => {
+			db.collection('estate')
+				.find({}, {projection:{ _id:0, TipoInmueble:1, EntidadFederativa:1 }})
+				.toArray((err, res) => {
+					// Se crean sets para eliminar duplicados
+					let estados = ([... new Set(res.map((data) => data.EntidadFederativa))]).sort();
+					let inmuebles = ([... new Set(res.map((data) => data.TipoInmueble))]).sort();
+					response.status(200).send({estados, inmuebles});
+				});
+		})
+
         app.get('/inmueble',  async (request, res) => {
-            let entidadFed = request.query.entidadFederativa.toUpperCase()
-            let tipoInmueble = request.query.TipoInmueble.toUpperCase()
-            let query = {EntidadFederativa: entidadFed, TipoInmueble: tipoInmueble}
+            let query = {};
+			let entidad, tipo = '';
+			if (entidad = request.query.entidadFederativa) 
+				query.EntidadFederativa = entidad.toUpperCase();
+			if (tipo = request.query.TipoInmueble)
+				query.TipoInmueble = tipo.toUpperCase();
 
             db.collection('estate').find(query).toArray(function (error, result){
                 if (error) { 
