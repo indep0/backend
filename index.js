@@ -6,8 +6,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const PORT = 5000
 const MongoClient = require('mongodb').MongoClient
-//const connectionString = 'mongodb://mongodb:27017'
-const connectionString = 'mongodb://127.0.0.1:27017'
+const connectionString = 'mongodb://mongodb:27017'
+//const connectionString = 'mongodb://127.0.0.1:27017'
 const queryString = require('querystring')
 
 
@@ -71,6 +71,35 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
                     response: result
                 })
             })
+    })
+
+    app.get('/graphData', (request, response) => {
+        let query = {}
+        let entidad, tipo = ''
+        if (entidad = request.query.entidadFederativa) 
+            query.EntidadFederativa = entidad.toUpperCase();
+        if (tipo = request.query.TipoInmueble)
+            query.TipoInmueble = tipo.toUpperCase();
+        
+        db.collection('estate').find(query).toArray(function (error, result){
+            if(error){
+                console.error(`Error in graph data: ${error}`)
+            }
+            
+            const result2 = result.map(element => {
+                return {
+                    EntidadFederativa: element.EntidadFederativa,
+                    TipoInmueble: element.TipoInmueble
+                }
+            })
+
+
+            response.status(200).send({
+                size: result.length,
+                data: result2
+            })
+
+        })
     })
 })
 // Endpoints
