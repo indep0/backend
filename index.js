@@ -76,27 +76,32 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
     app.get('/graphData', (request, response) => {
         let query = {}
         let entidad, tipo = ''
-        if (entidad = request.query.entidadFederativa) 
+        if (entidad = request.query.entidadFederativa){ 
             query.EntidadFederativa = entidad.toUpperCase();
-        if (tipo = request.query.TipoInmueble)
+        }
+
+        if (tipo = request.query.TipoInmueble){
             query.TipoInmueble = tipo.toUpperCase();
-        
+        }
+
+
         db.collection('estate').find(query).toArray(function (error, result){
             if(error){
                 console.error(`Error in graph data: ${error}`)
             }
             
-            const result2 = result.map(element => {
+            const mappedResult = result.map(element => {
                 return {
                     EntidadFederativa: element.EntidadFederativa,
-                    TipoInmueble: element.TipoInmueble
+                    TipoInmueble: element.TipoInmueble,
+                    MetrosCuadrados: element.SuperficieTerrenoEnM2.replace('M2.', ''),
+                    Municipio: element.Municipio
                 }
             })
 
-
             response.status(200).send({
                 size: result.length,
-                data: result2
+                data: mappedResult,
             })
 
         })
